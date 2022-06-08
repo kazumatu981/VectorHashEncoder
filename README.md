@@ -1,1 +1,1 @@
-# VectorEncoder
+# VectorHashEncoder
