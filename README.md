@@ -1,1 +1,3 @@
 # VectorHashEncoder
+
+![BasicIdea](BasicIdea.jpg)

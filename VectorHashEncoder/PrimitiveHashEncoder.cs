@@ -26,6 +26,7 @@ public class PrimitiveHashEncoder
     public PrimitiveHashEncoder((double, double)[] initialBoundary, int bitsCount)
     {
         if (initialBoundary.Length == 0) throw new ArgumentOutOfRangeException(nameof(initialBoundary));
+        if (initialBoundary.Any(b => b.Item1 > b.Item2)) throw new ArgumentOutOfRangeException(nameof(initialBoundary));
         if (bitsCount <= 0 || bitsCount > 32) throw new ArgumentOutOfRangeException(nameof(bitsCount));
 
         InitialBoundaries = initialBoundary;
@@ -44,11 +45,13 @@ public class PrimitiveHashEncoder
     public PrimitiveHashEncoder((double, double)[] initialBoundary, char[] charactorTable)
     {
         if (initialBoundary.Length == 0) throw new ArgumentOutOfRangeException(nameof(initialBoundary));
+        if (initialBoundary.Any(b => b.Item1 > b.Item2)) throw new ArgumentOutOfRangeException(nameof(initialBoundary));
         if (charactorTable.Length == 0) throw new ArgumentOutOfRangeException(nameof(charactorTable));
-        if ((BitsCount = (int)Math.Log2(charactorTable.Length)) > 32) throw new ArgumentOutOfRangeException(nameof(charactorTable));
+        if ((int)Math.Log2(charactorTable.Length) > 32) throw new ArgumentOutOfRangeException(nameof(charactorTable));
 
         InitialBoundaries = initialBoundary;
         CharactorTable = charactorTable;
+        BitsCount = (int)Math.Log2(charactorTable.Length);
     }
     #endregion
 
@@ -65,6 +68,7 @@ public class PrimitiveHashEncoder
     public IEnumerable<int> EncodeToInt(double[] vector, int levels)
     {
         if (vector.Length != Dimension) throw new ArgumentOutOfRangeException(nameof(vector));
+        if (!IsInBoundaries(vector)) throw new ArgumentOutOfRangeException(nameof(vector));
         if (levels <= 0) throw new ArgumentOutOfRangeException(nameof(levels));
 
         var boundaries = InitialBoundaries;
@@ -88,5 +92,11 @@ public class PrimitiveHashEncoder
             null => throw new NotSupportedException(),
             _ => string.Join("", EncodeToInt(vector, levels).Select(c => CharactorTable[c]))
         };
+
+    public bool IsInBoundaries(double[] vector)
+        => vector.Select((value, index) => (index, value))
+            .All(element =>
+                InitialBoundaries[element.index].Item1 < element.value
+                    && element.value < InitialBoundaries[element.index].Item2);
     #endregion
 }

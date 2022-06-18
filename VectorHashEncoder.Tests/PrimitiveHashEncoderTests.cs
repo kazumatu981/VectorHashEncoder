@@ -61,7 +61,7 @@ public class PrimitiveHashEncoderTests
     public void StandardTest(double lat, double lon, string expected)
     {
         var encoder = new PrimitiveHashEncoder(
-                new[] { (-180.0, 180.0), (-90.0, 90.0) }, EncoderUtils.Base32Charactors);
+                new[] { (-180.0, 180.0), (-90.0, 90.0) }, BaseEncodeCharactors.Base32);
         var actual = encoder.EncodeToString(new[] { lon, lat }, expected.Length);
         Assert.Equal(expected, actual);
     }
