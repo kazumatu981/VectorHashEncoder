@@ -9,7 +9,7 @@ public class TimeSpaceHashEncoder : PrimitiveHashEncoder
             (-90.0, 90.0) ,
             (0, 24 * 60 * 60 * 1000)
         };
-    public TimeSpaceHashEncoder() : base(DefaultBoundary, EncoderUtils.Base32Charactors)
+    public TimeSpaceHashEncoder() : base(DefaultBoundary, BaseEncodeCharactors.Base32)
     {
         // no-constructor action except base constructor action.
     }
