@@ -43,15 +43,9 @@ public class PrimitiveHashEncoder
     /// * 文字テーブルが2^32以上の長さがある。
     /// </exception>
     public PrimitiveHashEncoder((double, double)[] initialBoundary, char[] charactorTable)
+        : this(initialBoundary, (int)Math.Log2(charactorTable.Length))
     {
-        if (initialBoundary.Length == 0) throw new ArgumentOutOfRangeException(nameof(initialBoundary));
-        if (initialBoundary.Any(b => b.Item1 > b.Item2)) throw new ArgumentOutOfRangeException(nameof(initialBoundary));
-        if (charactorTable.Length == 0) throw new ArgumentOutOfRangeException(nameof(charactorTable));
-        if ((int)Math.Log2(charactorTable.Length) > 32) throw new ArgumentOutOfRangeException(nameof(charactorTable));
-
-        InitialBoundaries = initialBoundary;
         CharactorTable = charactorTable;
-        BitsCount = (int)Math.Log2(charactorTable.Length);
     }
     #endregion
 
