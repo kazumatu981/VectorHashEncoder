@@ -8,7 +8,7 @@ namespace VectorHashEncoder;
 public class PrimitiveHashEncoder
 {
     #region Private Storage
-    private readonly (double, double)[] InitialBoundaries;
+    private readonly Segment[] InitialRectangle;
     private readonly char[]? CharactorTable;
     private readonly int BitsCount;
     #endregion
@@ -29,7 +29,9 @@ public class PrimitiveHashEncoder
         if (initialBoundary.Any(b => b.Item1 > b.Item2)) throw new ArgumentOutOfRangeException(nameof(initialBoundary));
         if (bitsCount <= 0 || bitsCount > 32) throw new ArgumentOutOfRangeException(nameof(bitsCount));
 
-        InitialBoundaries = initialBoundary;
+        InitialRectangle = initialBoundary
+            .Select(boundary => new Segment(boundary))
+            .ToArray();
         BitsCount = bitsCount;
     }
     /// <summary>
@@ -54,7 +56,7 @@ public class PrimitiveHashEncoder
     /// <summary>
     /// エンコード対象のベクトル空間の次元数
     /// </summary>
-    public int Dimension => InitialBoundaries.Length;
+    public int Dimension => InitialRectangle.Length;
     #endregion
     #endregion
 
@@ -65,19 +67,20 @@ public class PrimitiveHashEncoder
         if (!IsInBoundaries(vector)) throw new ArgumentOutOfRangeException(nameof(vector));
         if (levels <= 0) throw new ArgumentOutOfRangeException(nameof(levels));
 
-        var boundaries = InitialBoundaries;
+        var maxDepth = (levels * BitsCount) / Dimension;
 
-        var bitsEncoder = new BitsToIntEncoder(BitsCount, levels);
+        var segments = InitialRectangle
+            .ShulinkInDeep(vector, maxDepth)
+            .SelectMany(rectangle => rectangle);
 
-        while (!bitsEncoder.IsFull)
+        var bits = new Bits(BitsCount);
+        foreach (var segment in segments)
         {
-            boundaries = boundaries.Select(
-                (boundary, i) => boundary.Adjast(
-                    vector[i],
-                    mid => bitsEncoder.AddFlag(mid < vector[i]))
-            ).ToArray();
+            if (bits.AddFlag(segment.IsRightHandOfParent) is int @value)
+            {
+                yield return @value;
+            }
         }
-        return bitsEncoder.Encoded;
     }
 
     public string EncodeToString(double[] vector, int levels)
@@ -88,9 +91,6 @@ public class PrimitiveHashEncoder
         };
 
     public bool IsInBoundaries(double[] vector)
-        => vector.Select((value, index) => (index, value))
-            .All(element =>
-                InitialBoundaries[element.index].Item1 < element.value
-                    && element.value < InitialBoundaries[element.index].Item2);
+        => InitialRectangle.InInRectangle(vector);
     #endregion
 }
