@@ -57,7 +57,7 @@ public class PrimitiveHashEncoderTests
         var encoded = encoder.EncodeToInt(new[] { 140.625000, 36.562500 }, 1);
 
         Assert.Single(encoded);
-        Assert.Equal(29, encoded.First());
+        Assert.Equal(30, encoded.First());
     }
 
     [Theory]

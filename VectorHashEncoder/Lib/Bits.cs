@@ -22,4 +22,17 @@ public class Bits
         Value = 0;
         Digits = 0;
     }
+
+    public static Bits Encoder(int capacity) => new(capacity);
+    public IEnumerable<int> ToIntegers(IEnumerable<bool> flags)
+    {
+        foreach (var flag in flags)
+        {
+            if (AddFlag(flag) is int @value)
+            {
+                yield return @value;
+            }
+        }
+    }
+
 }

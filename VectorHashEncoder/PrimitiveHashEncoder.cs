@@ -69,18 +69,14 @@ public class PrimitiveHashEncoder
 
         var maxDepth = (levels * BitsCount) / Dimension;
 
-        var segments = InitialRectangle
+        var flags = InitialRectangle
             .ShulinkInDeep(vector, maxDepth)
-            .SelectMany(rectangle => rectangle);
+            .SelectMany(rectangle => rectangle)
+            .Select(segment => segment.IsRightHandOfParent);
 
-        var bits = new Bits(BitsCount);
-        foreach (var segment in segments)
-        {
-            if (bits.AddFlag(segment.IsRightHandOfParent) is int @value)
-            {
-                yield return @value;
-            }
-        }
+        return Bits
+            .Encoder(BitsCount)
+            .ToIntegers(flags);
     }
 
     public string EncodeToString(double[] vector, int levels)
