@@ -16,11 +16,19 @@ public class PrimitiveHashEncoderTests
         });
     }
     [Fact]
+    public void ConstructWithNoTable_WithIrlegalBoundary()
+    {
+        Assert.Throws<ArgumentOutOfRangeException>(() =>
+        {
+            _ = new PrimitiveHashEncoder(new[] { (0.1, 1.0), (3.0, 1.0) }, 5);
+        });
+    }
+    [Fact]
     public void ConstructWithNoTable_WithNegativeBits()
     {
         Assert.Throws<ArgumentOutOfRangeException>(() =>
         {
-            _ = new PrimitiveHashEncoder(Array.Empty<(double, double)>(), -1);
+            _ = new PrimitiveHashEncoder(new[] { (0.0, 1.0) }, -1);
         });
     }
     [Fact]
@@ -28,7 +36,7 @@ public class PrimitiveHashEncoderTests
     {
         Assert.Throws<ArgumentOutOfRangeException>(() =>
         {
-            _ = new PrimitiveHashEncoder(Array.Empty<(double, double)>(), 33);
+            _ = new PrimitiveHashEncoder(new[] { (0.0, 1.0) }, 33);
         });
     }
     [Fact]

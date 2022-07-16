@@ -6,7 +6,6 @@ namespace VectorHashEncoder.Tests;
 
 public class TimeSpaceHashEncoderTests
 {
-    protected double Delta = 500;     // 500ms
     [Fact]
     public void EncodeToString_NearPlaceMustSameCode_Latitude()
     {
@@ -53,7 +52,7 @@ public class TimeSpaceHashEncoderTests
     [Fact]
     public void EncodeToString_NearPlaceMustSameCode_Longitude()
     {
-        double epsiron = 0.003;  // 0.001度
+        double epsiron = 0.003;  // 0.003度
         var place1 = new GeoLocation()
         {
             Latitude = 38.258872,
