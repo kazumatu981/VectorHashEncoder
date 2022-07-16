@@ -16,14 +16,17 @@ public class TimeSpaceHashEncoder : PrimitiveHashEncoder
 
     public string EncodeToString(GeoLocation geoLocation, DateTime time, int levels)
     {
-        var timeValue = (((time.Hour * 60) + time.Minute) * 60 + time.Second) * 1000 + time.Millisecond;
-
-        return EncodeToString(new[]
+        return time.ToString("yyyyMMdd") + "-" + EncodeToString(new[]
         {
             geoLocation.Longitude,
             geoLocation.Latitude,
-            timeValue
+            time.MillisecondsFromMidNight()
         }, levels);
     }
+}
 
+public static class DateTimeUtils
+{
+    public static int MillisecondsFromMidNight(this DateTime thisDateTime)
+        => (int)thisDateTime.Subtract(new DateTime(thisDateTime.Year, thisDateTime.Month, thisDateTime.Day)).TotalMilliseconds;
 }

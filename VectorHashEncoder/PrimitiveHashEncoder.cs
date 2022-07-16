@@ -9,8 +9,9 @@ public class PrimitiveHashEncoder
 {
     #region Private Storage
     private readonly Segment[] InitialRectangle;
-    private readonly char[]? CharactorTable;
-    private readonly int BitsCount;
+    private readonly int BitsInDigit;
+    private readonly BitsEncoder BitsToIntegers;
+    private readonly CharactersTableEncoder? IntegersToChars;
     #endregion
 
 
@@ -23,16 +24,18 @@ public class PrimitiveHashEncoder
     /// </summary>
     /// <param name="initialBoundary">初期メッシュ</param>
     /// <exception cref="ArgumentOutOfRangeException">初期メッシュの次元が0である。</exception>
-    public PrimitiveHashEncoder((double, double)[] initialBoundary, int bitsCount)
+    public PrimitiveHashEncoder((double, double)[] initialBoundary, int bitsInDigit)
     {
         if (initialBoundary.Length == 0) throw new ArgumentOutOfRangeException(nameof(initialBoundary));
         if (initialBoundary.Any(b => b.Item1 > b.Item2)) throw new ArgumentOutOfRangeException(nameof(initialBoundary));
-        if (bitsCount <= 0 || bitsCount > 32) throw new ArgumentOutOfRangeException(nameof(bitsCount));
+        if (bitsInDigit <= 0 || bitsInDigit > 32) throw new ArgumentOutOfRangeException(nameof(bitsInDigit));
 
         InitialRectangle = initialBoundary
             .Select(boundary => new Segment(boundary))
             .ToArray();
-        BitsCount = bitsCount;
+        BitsInDigit = bitsInDigit;
+
+        BitsToIntegers = new BitsEncoder(bitsInDigit);
     }
     /// <summary>
     /// コンストラクタ
@@ -47,7 +50,7 @@ public class PrimitiveHashEncoder
     public PrimitiveHashEncoder((double, double)[] initialBoundary, char[] charactorTable)
         : this(initialBoundary, (int)Math.Log2(charactorTable.Length))
     {
-        CharactorTable = charactorTable;
+        IntegersToChars = new CharactersTableEncoder(charactorTable);
     }
     #endregion
 
@@ -64,29 +67,24 @@ public class PrimitiveHashEncoder
     public IEnumerable<int> EncodeToInt(double[] vector, int levels)
     {
         if (vector.Length != Dimension) throw new ArgumentOutOfRangeException(nameof(vector));
-        if (!IsInBoundaries(vector)) throw new ArgumentOutOfRangeException(nameof(vector));
+        if (!InitialRectangle.IsInRectangle(vector)) throw new ArgumentOutOfRangeException(nameof(vector));
         if (levels <= 0) throw new ArgumentOutOfRangeException(nameof(levels));
 
-        var maxDepth = (levels * BitsCount) / Dimension;
+        var maxDepth = (levels * BitsInDigit) / Dimension;
 
-        var flags = InitialRectangle
+        return InitialRectangle
             .ShulinkInDeep(vector, maxDepth)
             .SelectMany(rectangle => rectangle)
-            .Select(segment => segment.IsRightHandOfParent);
-
-        return Bits
-            .Encoder(BitsCount)
-            .ToIntegers(flags);
+            .Select(segment => segment.IsRightHandOfParent)
+            .Encode(BitsToIntegers);
     }
-
     public string EncodeToString(double[] vector, int levels)
-        => CharactorTable switch
-        {
-            null => throw new NotSupportedException(),
-            _ => string.Join("", EncodeToInt(vector, levels).Select(c => CharactorTable[c]))
-        };
+    {
+        if (IntegersToChars == null) throw new NotSupportedException();
 
-    public bool IsInBoundaries(double[] vector)
-        => InitialRectangle.InInRectangle(vector);
+        return EncodeToInt(vector, levels)
+            .Encode(IntegersToChars)
+            .JoinIntoString();
+    }
     #endregion
 }

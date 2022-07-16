@@ -1,11 +1,46 @@
 using System;
+using System.Collections.Generic;
 using VectorHashEncoder;
 using Xunit;
 
 namespace VectorHashEncoder.Tests;
 
+public struct TimeSpaceHashEncoderTestData
+{
+    public GeoLocation Location { get; set; }
+    public DateTime Time { get; set; }
+    public string Expected { get; set; }
+}
+
 public class TimeSpaceHashEncoderTests
 {
+    public static IEnumerable<object[]> GetStandardTestData()
+    {
+        yield return new object[]
+        {
+            new TimeSpaceHashEncoderTestData
+            {
+                Location = new GeoLocation
+                {
+                    Latitude = 38.258872,
+                    Longitude = 140.838918
+                },
+                Time = new DateTime(2022, 6, 16, 21, 21, 01, 20),
+                Expected = "20220616-yyhtkbwrd"
+            }
+        };
+    }
+
+    [Theory]
+    [MemberData(nameof(GetStandardTestData))]
+    public void StandardTest(TimeSpaceHashEncoderTestData data)
+    {
+        var encoder = new TimeSpaceHashEncoder();
+
+        var actual = encoder.EncodeToString(data.Location, data.Time, 9);
+
+        Assert.Equal(data.Expected, actual);
+    }
     [Fact]
     public void EncodeToString_NearPlaceMustSameCode_Latitude()
     {
@@ -42,10 +77,8 @@ public class TimeSpaceHashEncoderTests
 
         // place1 and place2 must be near.
         Assert.Equal(encoded1, encoded2);
-
         // place1 and place3 must not be near.
         Assert.NotEqual(encoded1, encoded3);
-
         // but place3 and place4 must be near.
         Assert.Equal(encoded3, encoded4);
     }
@@ -82,13 +115,10 @@ public class TimeSpaceHashEncoderTests
         var encoded3 = encoder.EncodeToString(place3, time1, 9);
         var encoded4 = encoder.EncodeToString(place4, time1, 9);
 
-
         // place1 and place2 must be near.
         Assert.Equal(encoded1, encoded2);
-
         // place1 and place3 must not be near.
         Assert.NotEqual(encoded1, encoded3);
-
         // but place3 and place4 must be near.
         Assert.Equal(encoded3, encoded4);
     }
@@ -113,13 +143,10 @@ public class TimeSpaceHashEncoderTests
         var encoded3 = encoder.EncodeToString(place1, time3, 9);
         var encoded4 = encoder.EncodeToString(place1, time4, 9);
 
-
         // time1 and time2 must be near.
         Assert.Equal(encoded1, encoded2);
-
         // time1 and time3 must not be near.
         Assert.NotEqual(encoded1, encoded3);
-
         // but time3 and time4 must be near.
         Assert.Equal(encoded3, encoded4);
     }
