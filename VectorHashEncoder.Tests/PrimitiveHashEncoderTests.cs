@@ -73,4 +73,18 @@ public class PrimitiveHashEncoderTests
         var actual = encoder.EncodeToString(new[] { lon, lat }, expected.Length);
         Assert.Equal(expected, actual);
     }
+    [Theory]
+    [InlineData(36.562500, 140.625000, 500, "yf")]
+    [InlineData(38.262634, 140.883179, 300, "yfhxh3")]
+    [InlineData(38.262634, 140.850220, 100, "ydjx0c")]
+    [InlineData(35.681448, 139.765835, -100, "uys3unxn")]
+    [InlineData(38.258944, 140.839062, 3, "ydht03w5")]
+    public void ThreeDimensionVectorTest(double lat, double lon, double height, string expected)
+    {
+        var encoder = new PrimitiveHashEncoder(
+                new[] { (-180.0, 180.0), (-90.0, 90.0), (-1000.0, 1000.0) }, BaseEncodeCharactors.Base32);
+        var actual = encoder.EncodeToString(new[] { lon, lat, height }, expected.Length);
+        Assert.Equal(expected, actual);
+    }
+
 }
