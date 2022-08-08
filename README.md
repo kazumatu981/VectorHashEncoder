@@ -1,5 +1,7 @@
 # VectorHashEncoder
 
+[![CodeQL](https://github.com/kazumatu981/VectorHashEncoder/actions/workflows/codeql.yml/badge.svg)](https://github.com/kazumatu981/VectorHashEncoder/actions/workflows/codeql.yml)
+
 ## Basic Idea
 
 `VectorHashEncoder`は、Gustavo Niemeyer氏により開発されpublic domainで公開されている [Geohash](http://geohash.org/)の一般化実装である。
