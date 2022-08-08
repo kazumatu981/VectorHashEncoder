@@ -1,6 +1,7 @@
 # VectorHashEncoder
 
 [![CodeQL](https://github.com/kazumatu981/VectorHashEncoder/actions/workflows/codeql.yml/badge.svg)](https://github.com/kazumatu981/VectorHashEncoder/actions/workflows/codeql.yml)
+[![.NET](https://github.com/kazumatu981/VectorHashEncoder/actions/workflows/dotnet.yml/badge.svg)](https://github.com/kazumatu981/VectorHashEncoder/actions/workflows/dotnet.yml)
 
 ## Basic Idea
 
