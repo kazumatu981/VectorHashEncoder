@@ -45,6 +45,14 @@ Geohashは、緯度/経度によるエンコードであるのに対して、こ
 
 ## Usage
 
+### PrimitiveHashEncoder
+
+```CSharp
+
+```
+
+### TimeSpaceHashEncoder
+
 ### GeoHashEncoder
 
 ```CSharp
@@ -67,11 +75,6 @@ var actual = encoder.EncodeToString(location, 8);
 Assert.Equal("xnu1sugf", actual);
 
 ```
-
-### TimeSpaceHashEncoder
-
-### PrimitiveHashEncoder
-
 ## Link
 
 * [Wikipedia ja ジオハッシュ](https://ja.wikipedia.org/wiki/%E3%82%B8%E3%82%AA%E3%83%8F%E3%83%83%E3%82%B7%E3%83%A5)
