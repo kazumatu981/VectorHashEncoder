@@ -50,6 +50,27 @@ Geohashは、緯度/経度によるエンコードであるのに対して、こ
 
 ### TimeSpaceHashEncoder
 
+```CSharp
+
+// 対象: 場所
+var place1 = new GeoLocation()
+{
+    Latitude = 38.258872,
+    Longitude = 140.838918
+};
+// 対象: 時間
+var time1 = new DateTime(2022, 6, 16, 21, 21, 00);
+
+// エンコーダ
+var encoder = new TimeSpaceHashEncoder();
+
+// エンコード
+var encoded1 = encoder.EncodeToString(place1, time1, 9);
+
+
+
+```
+
 ### GeoHashEncoder
 
 ```CSharp
